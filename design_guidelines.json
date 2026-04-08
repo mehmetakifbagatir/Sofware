@@ -1,0 +1,135 @@
+{
+  "theme": "dark",
+  "archetype": "Archetype 4: Swiss & High-Contrast (Tactical Dark)",
+  "design_rationale": "The user requested a deep dark background with cyan/teal highlights and a professional data analysis tool appearance. The design maps to a modified Swiss/High-Contrast archetype built for dense dashboards. We avoid standard SaaS mud by using Deep Obsidian (#0A0A0A) as the base, pairing it with high-visibility Electric Cyan (#00E5FF). Typography leans heavily on IBM Plex Mono for data legibility, ensuring an authoritative, command-center aesthetic.",
+  "colors": {
+    "background": {
+      "main": "#0A0A0A",
+      "card": "#141414",
+      "panel": "#0F0F13"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A1A1AA",
+      "tertiary": "#71717A",
+      "metric": "#F4F4F5"
+    },
+    "brand": {
+      "primary": "#00E5FF",
+      "secondary": "#00BFA5",
+      "tertiary": "#0891B2"
+    },
+    "status": {
+      "success": "#00E676",
+      "danger": "#FF3B30",
+      "warning": "#FFB300",
+      "info": "#3B82F6"
+    },
+    "border": {
+      "default": "rgba(255, 255, 255, 0.08)",
+      "focus": "rgba(0, 229, 255, 0.5)",
+      "card": "rgba(255, 255, 255, 0.05)"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Manrope",
+      "body": "IBM Plex Sans",
+      "mono": "IBM Plex Mono"
+    },
+    "scales": {
+      "h1": "text-4xl font-light tracking-tight text-white",
+      "h2": "text-2xl font-medium tracking-tight text-white",
+      "h3": "text-lg font-medium text-zinc-200",
+      "metric_value": "text-5xl font-mono font-light tracking-tighter text-white",
+      "metric_label": "text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500",
+      "body": "text-sm text-zinc-400 leading-relaxed",
+      "code": "text-sm font-mono text-cyan-400"
+    }
+  },
+  "layout": {
+    "strategy": "The 'Control Room' Grid",
+    "spacing": {
+      "page_padding": "p-6 md:p-8 lg:p-12",
+      "section_gap": "gap-8 lg:gap-12",
+      "grid_gap": "gap-4 md:gap-6",
+      "card_padding": "p-6"
+    },
+    "structure": {
+      "control_panel": "Sticky top navigation area with glassmorphism to remain accessible during scrolling.",
+      "metrics_grid": "4-column CSS grid (grid-cols-1 md:grid-cols-2 xl:grid-cols-4) for top-level stats.",
+      "charts_area": "2-column grid for side-by-side comparison, spanning full width on mobile.",
+      "comparison_table": "Full width container with overflow-x-auto for dense data tabular view.",
+      "analysis_section": "Reading-optimized max-w-3xl block at the bottom, left-aligned, spacious line-height."
+    }
+  },
+  "surfaces": {
+    "control_panel": "backdrop-blur-xl bg-black/60 border-b border-white/10 shadow-sm z-50",
+    "card": "bg-[#141414] border border-white/5 rounded-lg shadow-[0_8px_32px_rgba(0,229,255,0.02)] transition-all duration-300 hover:border-white/10 hover:shadow-[0_8px_32px_rgba(0,229,255,0.05)]",
+    "metric_card": "relative overflow-hidden bg-[#141414] border border-white/5 rounded-lg p-6"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#00E5FF] text-black font-semibold hover:bg-[#00BFA5] hover:text-black transition-colors rounded-md px-6 py-2 shadow-[0_0_15px_rgba(0,229,255,0.3)]",
+      "secondary": "bg-transparent border border-white/20 text-white hover:bg-white/5 hover:border-white/40 transition-colors rounded-md px-6 py-2",
+      "danger": "bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500/20 transition-colors rounded-md px-6 py-2"
+    },
+    "inputs": {
+      "select": "bg-[#0A0A0A] border-white/10 text-white focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] rounded-md",
+      "slider": "accent-[#00E5FF]"
+    },
+    "charts": {
+      "library": "Recharts via Shadcn",
+      "styling": "Remove cartesian grid lines or make them extremely faint (stroke-white/5). Use smooth organic curves (type='monotone') for line charts. Use strokeWidth=2. Fill areas with linear gradients of the stroke color fading to transparent.",
+      "colors": {
+        "accepted": "#00E676",
+        "rejected": "#FF3B30",
+        "total": "#00E5FF"
+      }
+    },
+    "table": {
+      "styling": "border-collapse w-full text-sm",
+      "header": "border-b border-white/10 text-left py-3 px-4 text-xs uppercase tracking-widest text-zinc-500 font-semibold",
+      "row": "border-b border-white/5 hover:bg-white/[0.02] transition-colors",
+      "cell": "py-3 px-4 text-zinc-300 font-mono"
+    }
+  },
+  "motion": {
+    "charts": "Recharts animationDuration={800} ease='ease-in-out'",
+    "hover_states": "transform transition-transform duration-200 hover:-translate-y-[2px]",
+    "data_updates": "Use Framer Motion to softly pop (scale 1.05 -> 1) numeric values when they update in real-time."
+  },
+  "icons": {
+    "library": "@phosphor-icons/react",
+    "style": "Duotone weight for high-end tech feel, mapping accent colors to the duotone layers."
+  },
+  "accessibility": {
+    "contrast": "Ensure all text against #141414 passes APCA guidelines. Cyan text (#00E5FF) is used only for large numbers or icons; for smaller text, use white or light grey.",
+    "testing_attributes": [
+      "data-testid='strategy-select'",
+      "data-testid='client-slider'",
+      "data-testid='rate-slider'",
+      "data-testid='start-experiment-btn'",
+      "data-testid='stop-experiment-btn'",
+      "data-testid='run-all-btn'",
+      "data-testid='metric-total-req'",
+      "data-testid='metric-accepted'",
+      "data-testid='metric-rejected'",
+      "data-testid='metric-latency'",
+      "data-testid='chart-requests-time'",
+      "data-testid='chart-rejection-rate'",
+      "data-testid='chart-performance'",
+      "data-testid='comparison-table'",
+      "data-testid='analysis-text'"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Install required fonts: Manrope, IBM Plex Sans, IBM Plex Mono from Google Fonts.",
+    "Install Recharts and configure Shadcn chart components with the specified dark theme colors.",
+    "Install @phosphor-icons/react for iconography.",
+    "Build the control panel as a sticky header using glassmorphism (backdrop-blur-xl).",
+    "Use standard semantic HTML sections, ensuring all inputs and interactive components are connected and testable via data-testid.",
+    "Ensure charts use responsive containers and adjust heights appropriately for mobile vs desktop views.",
+    "Render the Analysis Text using standard typography elements, avoiding cards for this section to create visual break."
+  ]
+}
