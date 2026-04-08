@@ -50,7 +50,7 @@ export default function ChartsSection({ timeSeriesData, isRunning }) {
           </h3>
           <div className="h-[280px]">
             {hasData ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={timeSeriesData}>
                   <defs>
                     <linearGradient id="totalGradient" x1="0" y1="0" x2="0" y2="1">
@@ -133,7 +133,7 @@ export default function ChartsSection({ timeSeriesData, isRunning }) {
           </h3>
           <div className="h-[280px]">
             {hasData ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={280}>
                 <LineChart data={timeSeriesData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis 

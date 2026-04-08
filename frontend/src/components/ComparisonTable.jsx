@@ -75,7 +75,7 @@ export default function ComparisonTable({ results }) {
               Performance Comparison
             </h3>
             <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={chartData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis type="number" stroke="#71717A" tick={{ fill: '#71717A', fontSize: 11 }} />
