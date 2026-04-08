@@ -401,12 +401,12 @@ async def stop_experiment():
 @api_router.post("/experiment/run-all")
 async def run_all_strategies(config: ExperimentConfig):
     """Run experiment with all strategies and compare results"""
-    state = experiment_state
+    global experiment_state
     
-    if state.is_running:
+    if experiment_state.is_running:
         return {"error": "Experiment already running"}
     
-    state.comparison_results = []
+    comparison_results = []
     strategies = [
         RateLimitStrategy.NO_LIMIT,
         RateLimitStrategy.FIXED_WINDOW,
@@ -414,50 +414,54 @@ async def run_all_strategies(config: ExperimentConfig):
     ]
     
     for strategy in strategies:
-        # Reset for each strategy
-        state.reset()
-        state.current_strategy = strategy
-        state.num_clients = config.num_clients
-        state.requests_per_second = config.requests_per_second
-        state.update_rate_limits(config.rate_limit)
-        state.is_running = True
-        state.start_time = time.time()
+        # Create fresh state for each strategy
+        experiment_state.reset()
+        experiment_state.current_strategy = strategy
+        experiment_state.num_clients = config.num_clients
+        experiment_state.requests_per_second = config.requests_per_second
+        experiment_state.update_rate_limits(config.rate_limit)
+        experiment_state.is_running = True
+        experiment_state.start_time = time.time()
         
         # Run simulation
         await run_load_simulation(config.duration_seconds, broadcast=True)
         
         # Calculate metrics
-        elapsed = time.time() - state.start_time if state.start_time else 1
-        avg_response = sum(state.response_times) / len(state.response_times) if state.response_times else 0
-        rejection_rate = (state.rejected_requests / state.total_requests * 100) if state.total_requests > 0 else 0
-        throughput = state.accepted_requests / elapsed if elapsed > 0 else 0
+        elapsed = time.time() - experiment_state.start_time if experiment_state.start_time else 1
+        avg_response = sum(experiment_state.response_times) / len(experiment_state.response_times) if experiment_state.response_times else 0
+        rejection_rate = (experiment_state.rejected_requests / experiment_state.total_requests * 100) if experiment_state.total_requests > 0 else 0
+        throughput = experiment_state.accepted_requests / elapsed if elapsed > 0 else 0
         
         result = {
             "strategy": strategy.value,
-            "total_requests": state.total_requests,
-            "accepted_requests": state.accepted_requests,
-            "rejected_requests": state.rejected_requests,
+            "total_requests": experiment_state.total_requests,
+            "accepted_requests": experiment_state.accepted_requests,
+            "rejected_requests": experiment_state.rejected_requests,
             "avg_response_time": round(avg_response, 2),
             "rejection_rate": round(rejection_rate, 2),
             "throughput": round(throughput, 2),
-            "stability_score": calculate_stability_score(state.response_times, rejection_rate)
+            "stability_score": calculate_stability_score(experiment_state.response_times, rejection_rate)
         }
-        state.comparison_results.append(result)
+        comparison_results.append(result)
+        
+        # Store results in state for broadcasting
+        experiment_state.comparison_results = comparison_results.copy()
         
         # Broadcast progress
         await broadcast_metrics()
         
         # Small delay between strategies
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.3)
     
-    state.is_running = False
+    experiment_state.is_running = False
+    experiment_state.comparison_results = comparison_results
     
     # Generate analysis
-    analysis = generate_analysis_text(state.comparison_results)
+    analysis = generate_analysis_text(comparison_results)
     
     return {
         "status": "completed",
-        "results": state.comparison_results,
+        "results": comparison_results,
         "analysis": analysis
     }
 

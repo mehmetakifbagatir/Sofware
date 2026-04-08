@@ -39,6 +39,7 @@ function App() {
   const [analysisText, setAnalysisText] = useState("");
   const wsRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
+  const isRunningAllRef = useRef(false);
 
   // WebSocket connection
   const connectWebSocket = useCallback(() => {
@@ -57,14 +58,13 @@ function App() {
           
           if (message.type === "metrics_update" || message.type === "connected") {
             const data = message.data;
-            setMetrics(prev => ({
-              ...prev,
-              ...data
-            }));
-            setIsRunning(data.is_running);
-            
-            if (data.comparison_results?.length > 0) {
-              setComparisonResults(data.comparison_results);
+            // Only update metrics if not running all strategies (to avoid interference)
+            if (!isRunningAllRef.current) {
+              setMetrics(prev => ({
+                ...prev,
+                ...data
+              }));
+              setIsRunning(data.is_running);
             }
           }
         } catch (e) {
@@ -137,22 +137,36 @@ function App() {
 
   const runAllStrategies = async () => {
     try {
+      isRunningAllRef.current = true;
       setIsRunningAll(true);
       setComparisonResults([]);
       setAnalysisText("");
       toast.info("Running all strategies...");
       
+      console.log("Starting run-all experiment...");
+      
       const response = await fetch(`${API}/experiment/run-all`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config)
+        body: JSON.stringify({
+          ...config,
+          duration_seconds: Math.min(config.duration_seconds, 3) // Cap at 3 seconds per strategy
+        })
       });
+      
+      console.log("Response status:", response.status);
+      
       const data = await response.json();
+      
+      console.log("Run-all response data:", data);
       
       if (data.error) {
         toast.error(data.error);
         return;
       }
+      
+      console.log("Setting comparison results:", data.results);
+      console.log("Setting analysis text:", data.analysis?.substring(0, 100));
       
       setComparisonResults(data.results || []);
       setAnalysisText(data.analysis || "");
@@ -161,6 +175,7 @@ function App() {
       console.error("Failed to run all strategies:", e);
       toast.error("Failed to run all strategies");
     } finally {
+      isRunningAllRef.current = false;
       setIsRunningAll(false);
     }
   };
